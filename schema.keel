@@ -1,0 +1,23 @@
+model Todo {
+    fields {
+        title Text
+        completedAt Date?
+        createdBy Identity
+    }
+
+    actions {
+        list getAllTodos()
+        create createTodo() with (title) {
+            @set(todo.createdBy = ctx.identity)
+        }
+        get getTodoById(id)
+        delete deleteTodoById(id) {
+            @permission(expression: todo.createdBy == ctx.identity)
+        }
+    }
+
+    @permission(
+        actions: [list, create, get],
+        expression: ctx.isAuthenticated
+    )
+}
